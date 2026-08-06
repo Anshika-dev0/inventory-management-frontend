@@ -1,8 +1,11 @@
+import Login from "./pages/Login";
+
 function App() {
   return (
-    <div> 
-      <h1> Inventory Management System </h1>
+    <div>
+      <Login />
     </div>
   );
 }
+
 export default App;
