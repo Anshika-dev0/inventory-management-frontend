@@ -9,7 +9,7 @@ function Products() {
       const response = await API.get("/products");
       setProducts(response.data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -24,13 +24,27 @@ function Products() {
       {products.length === 0 ? (
         <p>No products found.</p>
       ) : (
-        <ul>
-          {products.map((product) => (
-            <li key={product.id}>
-              {product.name} - {product.category} - ₹{product.price}
-            </li>
-          ))}
-        </ul>
+        <table border="1" cellPadding="10">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {products.map((product) => (
+              <tr key={product.id}>
+                <td>{product.name}</td>
+                <td>{product.category}</td>
+                <td>₹{product.price}</td>
+                <td>{product.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

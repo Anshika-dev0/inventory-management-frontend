@@ -22,6 +22,9 @@ function Sidebar() {
         <NavLink to="/users">Users</NavLink>
         <br /><br />
 
+        <NavLink to="/add-product"> Add Product</NavLink>
+        <br /> <br />
+
         <button onClick={handleLogout}>Logout</button>
       </nav>
     </div>

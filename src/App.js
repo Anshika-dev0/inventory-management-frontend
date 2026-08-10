@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
+import AddProduct from "./pages/AddProduct";
 
 function App() {
   return (
@@ -26,7 +27,15 @@ function App() {
           </ProtectedRoute>
         }
         />
-      </Routes>
+        <Route path="/add-product" element={
+          <ProtectedRoute>
+            <AddProduct />
+        
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+    
     </BrowserRouter>
   );
 }
