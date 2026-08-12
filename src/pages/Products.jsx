@@ -3,20 +3,30 @@ import API from "../services/api";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
 
   const fetchProducts = async () => {
-    try {
-      const response = await API.get("/products");
-      setProducts(response.data);
-    } catch (error) {
-      console.error(error);
+  try {
+    let response;
+
+    if (search.trim() !== "") {
+      response = await API.get(
+        `/products/name/${encodeURIComponent(search)}`
+      );
+    } else {
+      response = await API.get("/products");
     }
-  };
+
+    setProducts(response.data);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [search]);
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -43,9 +53,38 @@ function Products() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await API.delete(`/products/${id}`);
+
+      alert("Product deleted successfully");
+
+      fetchProducts();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete product");
+    }
+  };
+
   return (
     <div>
       <h1>Products</h1>
+
+      <input
+        type="text"
+        placeholder="Search product by name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <br />
+      <br />
 
       {products.length === 0 ? (
         <p>No products found.</p>
@@ -68,14 +107,22 @@ function Products() {
                 <td>{product.category}</td>
                 <td>₹{product.price}</td>
                 <td>{product.quantity}</td>
+
                 <td>
-                  <button type="button"
-                  onClick={() => {
-                    console.log("Edit Clicked",product);
-                    handleEdit(product);
-                  }}
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(product)}
                   >
                     Edit
+                  </button>
+
+                  {" "}
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -100,7 +147,8 @@ function Products() {
               }
             />
 
-            <br /><br />
+            <br />
+            <br />
 
             <input
               type="text"
@@ -113,7 +161,8 @@ function Products() {
               }
             />
 
-            <br /><br />
+            <br />
+            <br />
 
             <input
               type="number"
@@ -126,7 +175,8 @@ function Products() {
               }
             />
 
-            <br /><br />
+            <br />
+            <br />
 
             <input
               type="number"
@@ -139,9 +189,12 @@ function Products() {
               }
             />
 
-            <br /><br />
+            <br />
+            <br />
 
             <button type="submit">Update Product</button>
+
+            {" "}
 
             <button
               type="button"
