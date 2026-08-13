@@ -5,6 +5,7 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
+  const [category, setCategory] = useState("");
 
   const fetchProducts = async () => {
   try {
@@ -13,6 +14,11 @@ function Products() {
     if (search.trim() !== "") {
       response = await API.get(
         `/products/name/${encodeURIComponent(search)}`
+      );
+    }
+    else if (category !== "") {
+      response = await API.get(
+        `/products/category/${encodeURIComponent(category)}`
       );
     } else {
       response = await API.get("/products");
@@ -26,7 +32,7 @@ function Products() {
 
   useEffect(() => {
     fetchProducts();
-  }, [search]);
+  }, [search, category]);
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -85,6 +91,19 @@ function Products() {
 
       <br />
       <br />
+
+      <select
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+>
+  <option value="">All Categories</option>
+  <option value="Electronic">Electronic</option>
+  <option value="Food">Food</option>
+  <option value="Clothing">Clothing</option>
+</select>
+
+<br />
+<br />
 
       {products.length === 0 ? (
         <p>No products found.</p>

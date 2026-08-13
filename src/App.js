@@ -4,11 +4,21 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
+import Users from "./pages/Users";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+      <Route
+      path="/users"
+      element={
+        <ProtectedRoute>
+        <Users />
+        </ProtectedRoute>
+      }
+      />
 
         <Route path="/" element={<Login />} />
 
