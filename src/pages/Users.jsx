@@ -20,11 +20,30 @@ function Users() {
       });
 
       alert("User role updated successfully");
-
       fetchUsers();
     } catch (error) {
       console.error(error);
       alert("Failed to update user role");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      await API.delete(`/users/${id}`);
+
+      alert("User deleted successfully");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete user");
     }
   };
 
@@ -75,6 +94,15 @@ function Users() {
                     }
                   >
                     Update Role
+                  </button>
+
+                  {" "}
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
