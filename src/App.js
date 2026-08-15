@@ -5,6 +5,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
 import Users from "./pages/Users";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -16,6 +17,14 @@ function App() {
       element={
         <ProtectedRoute>
         <Users />
+        </ProtectedRoute>
+      }
+      />
+      <Route 
+      path = "/home"
+      element={
+        <ProtectedRoute>
+          <Home />
         </ProtectedRoute>
       }
       />

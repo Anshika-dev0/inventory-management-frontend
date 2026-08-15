@@ -7,32 +7,60 @@ function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [category, setCategory] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+
+  const [stockStatus, setStockStatus] = useState("");
+  const [sortPrice, setSortPrice] = useState("");
+
   const fetchProducts = async () => {
-  try {
-    let response;
+    try {
+      let response;
 
-    if (search.trim() !== "") {
-      response = await API.get(
-        `/products/name/${encodeURIComponent(search)}`
-      );
-    }
-    else if (category !== "") {
-      response = await API.get(
-        `/products/category/${encodeURIComponent(category)}`
-      );
-    } else {
-      response = await API.get("/products");
-    }
+      if (search.trim() !== "") {
+        response = await API.get(
+          `/products/name/${encodeURIComponent(search)}`
+        );
+      } 
+      else if (category !== "") {
+        response = await API.get(
+          `/products/category/${encodeURIComponent(category)}`
+        );
+      } 
+      else if (stockStatus === "in-stock") {
+        response = await API.get("/products/in-stock");
+      } 
+      else if (stockStatus === "out-stock") {
+        response = await API.get("/products/out-stock");
+      } 
+      else if (stockStatus === "low-stock") {
+        response = await API.get("/products/low-stock");
+      } 
+      else if (sortPrice !== "") {
+        response = await API.get(
+          `/products/sort/price?order=${sortPrice}`
+        );
+      } 
+      else {
+        response = await API.get(
+          `/products/pagination?page=${page}&limit=${limit}`
+        );
+      }
 
-    setProducts(response.data);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-};
+      const productData = Array.isArray(response.data)
+        ? response.data
+        : response.data.products || [];
+
+      setProducts(productData);
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
-  }, [search, category]);
+  }, [search, category, stockStatus, sortPrice, page]);
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -82,29 +110,71 @@ function Products() {
     <div>
       <h1>Products</h1>
 
+      {/* Search */}
       <input
         type="text"
         placeholder="Search product by name"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
       />
 
       <br />
       <br />
 
+      {/* Category Filter */}
       <select
-  value={category}
-  onChange={(e) => setCategory(e.target.value)}
->
-  <option value="">All Categories</option>
-  <option value="Electronic">Electronic</option>
-  <option value="Food">Food</option>
-  <option value="Clothing">Clothing</option>
-</select>
+        value={category}
+        onChange={(e) => {
+          setCategory(e.target.value);
+          setPage(1);
+        }}
+      >
+        <option value="">All Categories</option>
+        <option value="Electronic">Electronic</option>
+        <option value="Food">Food</option>
+        <option value="Clothing">Clothing</option>
+      </select>
 
-<br />
-<br />
+      <br />
+      <br />
 
+      {/* Stock Filter */}
+      <select
+        value={stockStatus}
+        onChange={(e) => {
+          setStockStatus(e.target.value);
+          setPage(1);
+        }}
+      >
+        <option value="">All Stock</option>
+        <option value="in-stock">In Stock</option>
+        <option value="out-stock">Out of Stock</option>
+        <option value="low-stock">Low Stock</option>
+      </select>
+
+      <br />
+      <br />
+
+      {/* Price Sorting */}
+      <select
+        value={sortPrice}
+        onChange={(e) => {
+          setSortPrice(e.target.value);
+          setPage(1);
+        }}
+      >
+        <option value="">Sort by Price</option>
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+      </select>
+
+      <br />
+      <br />
+
+      {/* Products Table */}
       {products.length === 0 ? (
         <p>No products found.</p>
       ) : (
@@ -150,6 +220,39 @@ function Products() {
         </table>
       )}
 
+      {/* Pagination */}
+      {search.trim() === "" &&
+        category === "" &&
+        stockStatus === "" &&
+        sortPrice === "" && (
+          <div>
+            <br />
+
+            <button
+              type="button"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+
+            {" "}
+
+            <span>Page {page}</span>
+
+            {" "}
+
+            <button
+              type="button"
+              onClick={() => setPage(page + 1)}
+              disabled={products.length < limit}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+      {/* Edit Product */}
       {editingProduct && (
         <div>
           <h2>Edit Product</h2>
